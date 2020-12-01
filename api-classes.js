@@ -35,6 +35,23 @@ class StoryList {
     return storyList;
   }
 
+  async removeStory(user, newStory) {
+    // TODO - Implement this functions!
+    // this function should return the newly created story so it can be used in
+    // the script.js file where it will be appended to the DOM
+    const response = await axios({
+      method: "DELETE",
+      url: `${BASE_URL}/stories`,
+      data: {
+        token: user.loginToken,
+      }
+    })
+
+    newStory = new Story(response.data.story)
+    this.stories.shift(newStory)
+    user.ownStories.shift(newStory)
+    return newStory
+  }
   /**
    * Method to make a POST request to /stories and add the new story to the list
    * - user - the current instance of User who will post the story
@@ -60,9 +77,9 @@ class StoryList {
     this.stories.unshift(newStory)
     user.ownStories.unshift(newStory)
     return newStory
-
   }
 }
+
 
 
 /**

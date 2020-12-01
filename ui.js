@@ -197,10 +197,10 @@ $(async function() {
         </a>
         <small class="article-author">by ${story.author}</small>
         <small class="article-hostname ${hostName}">(${hostName})</small>
-        <small class="article-username">posted by ${story.username}</small>
         <button type="button" class="close" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
+        <small class="article-username">posted by ${story.username}</small>
       </li>
     `);
 
@@ -288,10 +288,10 @@ $(async function() {
       </a>
       <small class="article-author">by ${story.author}</small>
       <small class="article-hostname ${hostName}">(${hostName})</small>
-      <small class="article-username">posted by ${story.username}</small>
       <button type="button" class="close" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
+      <small class="article-username">posted by ${story.username}</small>
     </li>`)
 
     $allStoriesList.prepend($li);
@@ -329,4 +329,8 @@ $(async function() {
     $ownStories.show()
   })
 
+  let closeIcons = $('.close')
+    closeIcons.on('click', function(e) {
+      e.target.parentElement.parentElement.remove()
+    })
 })
