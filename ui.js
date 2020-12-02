@@ -160,26 +160,18 @@ $(async function() {
       const result = generateStoryHTML(story);
       $allStoriesList.append(result);
     }
-
-    const stars = document.querySelectorAll('#stars')
-
-    for (let star of stars) {
-      star.addEventListener('click', function () {
-        console.log(currentUser.favorites)
-        if (star.classList[0] === 'far' && !currentUser.favorites.includes(star.parentElement)) {
-          star.classList = 'fas fa-star'
-          currentUser.favorites.push(star.parentElement)
-        }
-        else if (star.classList[0] === 'fas') {
-          star.classList = 'far fa-star'
-          const index = currentUser.favorites.indexOf(star.parentElement);
-          if (index > -1) {
-            currentUser.favorites.splice(index, 1);
-          }
-        } 
-      })
-    }
   }
+
+    $('#nav-submit-favorites').on('click', function (e) {
+      hideElements()
+      if (currentUser.favorites.length > $favorites.children().length) {
+        for (let favorite of currentUser.favorites) {
+          $favorites.append(generateStoryHTML(favorite))
+        }
+      }
+      $favorites.show()
+    })
+  
 
   /**
    * A function to render HTML for an individual Story instance
@@ -197,9 +189,6 @@ $(async function() {
         </a>
         <small class="article-author">by ${story.author}</small>
         <small class="article-hostname ${hostName}">(${hostName})</small>
-        <button type="button" class="close" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
         <small class="article-username">posted by ${story.username}</small>
       </li>
     `);
@@ -252,7 +241,6 @@ $(async function() {
     if (currentUser) {
       localStorage.setItem("token", currentUser.loginToken);
       localStorage.setItem("username", currentUser.username);
-      localStorage.setItem("favorites", currentUser.favorites)
     }
   }
 
@@ -263,6 +251,8 @@ $(async function() {
     hideElements()
     $submitForm.show()
   })
+
+  // add story to all story list and my story list
 
   $submitForm.on('submit', async function(e) {
     e.preventDefault()
@@ -288,15 +278,11 @@ $(async function() {
       </a>
       <small class="article-author">by ${story.author}</small>
       <small class="article-hostname ${hostName}">(${hostName})</small>
-      <button type="button" class="close" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
       <small class="article-username">posted by ${story.username}</small>
     </li>`)
 
     $allStoriesList.prepend($li);
     currentUser.ownStories.push($li);
-    $ownStories.append($li);
 
     $submitForm.trigger("reset");
     $submitForm.hide()
@@ -310,27 +296,33 @@ $(async function() {
     $userProfile.show()
   })
 
-  $('#nav-submit-favorites').on('click', function(e) {
-    hideElements()
-    
-    for (let favorite of currentUser.favorites) {
-      if (favorite.firstChild.nextSibling.classList[0] === 'fas') {
-        $favorites.append(favorite)
-      } else {
-        $favorites.delete(favorite)
-      }
-    }
-    $favorites.show()
-  })
+  // when clicking on my stories, own stories are shown and other elements are hidden
 
   $('#nav-submit-my-stories').on('click', function(e) {
     hideElements()
-    console.log(currentUser.ownStories)
+    if (currentUser.ownStories.length > $ownStories.children().length) {
+
+      for (let story of currentUser.ownStories) {
+        $ownStories.append(generateStoryHTML(story))
+      }
+    }
     $ownStories.show()
   })
 
-  let closeIcons = $('.close')
-    closeIcons.on('click', function(e) {
-      e.target.parentElement.parentElement.remove()
+  // loop through stars and add event listener to each star for favorites
+
+    const stars = document.querySelectorAll('#stars')
+
+    for (let star of stars) {
+      star.addEventListener('click', function () {
+        if (star.classList[0] === 'far') {
+          star.classList = 'fas fa-star'
+          StoryList.addFavorite(currentUser, star.parentElement.id)
+        }
+        else if (star.classList[0] === 'fas') {
+          star.classList = 'far fa-star'
+          StoryList.removeFavorite(currentUser, star.parentElement.id)
+        }
     })
+  }
 })

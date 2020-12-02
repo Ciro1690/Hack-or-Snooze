@@ -35,22 +35,46 @@ class StoryList {
     return storyList;
   }
 
-  async removeStory(user, newStory) {
+  static async addFavorite(user, storyId) {
+    const response = await axios({
+      method: "POST",
+      url: `${BASE_URL}/users/${user.username}/favorites/${storyId}`,
+      data: {
+        token: user.loginToken,
+      }
+    })  
+    .then((response) => {
+      user.favorites.unshift(response.data)
+    })
+  }
+
+  static async removeFavorite(user, storyId) {
+    const response = await axios({
+      method: "DELETE",
+      url: `${BASE_URL}/users/${user.username}/favorites/${storyId}`,
+      data: {
+        token: user.loginToken,
+      }
+    })
+      .then((response) => {
+        user.favorites.shift(response.data)
+      })
+  }
+
+  static async removeStory(user, storyId) {
     // TODO - Implement this functions!
     // this function should return the newly created story so it can be used in
     // the script.js file where it will be appended to the DOM
     const response = await axios({
       method: "DELETE",
-      url: `${BASE_URL}/stories`,
+      url: `${BASE_URL}/users/${user.username}/favorites/${storyId}`,
       data: {
         token: user.loginToken,
       }
     })
-
-    newStory = new Story(response.data.story)
-    this.stories.shift(newStory)
-    user.ownStories.shift(newStory)
-    return newStory
+    .then((response) => {
+        console.log(response)
+    })
   }
   /**
    * Method to make a POST request to /stories and add the new story to the list
