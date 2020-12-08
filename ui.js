@@ -180,8 +180,24 @@ $(async function() {
   function generateStoryHTML(story) {
     let hostName = getHostName(story.url);
 
-    // render story markup
-    const storyMarkup = $(`
+    let storyId = currentUser.favorites.map(story => story.storyId)
+    if (storyId.includes(story.storyId)) {
+      const storyMarkup = $(`
+      <li id="${story.storyId}">
+        <i class="fas fa-star" id="stars"></i>
+        <a class="article-link" href="${story.url}" target="a_blank">
+          <strong>${story.title}</strong>
+        </a>
+        <small class="article-author">by ${story.author}</small>
+        <small class="article-hostname ${hostName}">(${hostName})</small>
+        <small class="article-username">posted by ${story.username}</small>
+      </li>
+    `);
+      return storyMarkup;
+    }
+
+    else {
+      const storyMarkup = $(`
       <li id="${story.storyId}">
         <i class="far fa-star" id="stars"></i>
         <a class="article-link" href="${story.url}" target="a_blank">
@@ -192,8 +208,12 @@ $(async function() {
         <small class="article-username">posted by ${story.username}</small>
       </li>
     `);
+      return storyMarkup;
+    }
 
-    return storyMarkup;
+    // render story markup
+
+    
   }
 
   /* hide all elements in elementsArr */
@@ -315,14 +335,15 @@ $(async function() {
 
     for (let star of stars) {
       star.addEventListener('click', function () {
-        if (star.classList[0] === 'far') {
-          star.classList = 'fas fa-star'
-          StoryList.addFavorite(currentUser, star.parentElement.id)
-        }
-        else if (star.classList[0] === 'fas') {
-          star.classList = 'far fa-star'
+        let storyId = currentUser.favorites.map(story => story.storyId)
+        if (storyId.includes(star.parentElement.id)) {
           StoryList.removeFavorite(currentUser, star.parentElement.id)
+          star.classList = 'fas fa-star'
         }
+        else {
+          star.classList = 'far fa-star'
+          StoryList.addFavorite(currentUser, star.parentElement.id)        
+      }
     })
   }
 })

@@ -36,7 +36,7 @@ class StoryList {
   }
 
   static async addFavorite(user, storyId) {
-    const response = await axios({
+    return await axios({
       method: "POST",
       url: `${BASE_URL}/users/${user.username}/favorites/${storyId}`,
       data: {
@@ -45,11 +45,18 @@ class StoryList {
     })  
     .then((response) => {
       user.favorites.unshift(response.data)
+      if (response.ok) {
+        return true
+      }
+    })
+    .catch((response) => {
+      console.log(response)
+      return false
     })
   }
 
   static async removeFavorite(user, storyId) {
-    const response = await axios({
+    return await axios({
       method: "DELETE",
       url: `${BASE_URL}/users/${user.username}/favorites/${storyId}`,
       data: {
@@ -58,6 +65,12 @@ class StoryList {
     })
       .then((response) => {
         user.favorites.shift(response.data)
+        if (response.ok) {
+          return true
+        }
+      })
+      .catch((reponse) => {
+        return false
       })
   }
 
